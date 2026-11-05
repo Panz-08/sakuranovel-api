@@ -1,0 +1,21 @@
+{
+  "name": "sakuranovel-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API metadata dan daftar chapter Sakuranovel untuk Vercel",
+  "author": "panz-08",
+  "license": "MIT",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
