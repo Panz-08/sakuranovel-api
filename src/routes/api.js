@@ -18,6 +18,7 @@ const {
   searchNovels,
   listGenres,
   getStats,
+  randomNovel,
 } = require('../sakura');
 
 const router = express.Router();
@@ -110,6 +111,43 @@ router.get(
     return sendData(res, data, cacheMeta(result, { query: search || null, sort }), {
       maxAge: 300,
     });
+  }),
+);
+
+function parseSeed(value) {
+  if (value === undefined || value === null || value === '') return null;
+  const text = String(value).trim();
+  if (!/^\d{1,10}$/.test(text)) {
+    throw badRequest('seed harus berupa angka bulat 0 sampai 4294967295');
+  }
+  const seed = Number(text);
+  if (!Number.isSafeInteger(seed) || seed > 4294967295) {
+    throw badRequest('seed harus berupa angka bulat 0 sampai 4294967295');
+  }
+  return seed;
+}
+
+router.get(
+  '/novels/random',
+  asyncRoute(async (req, res) => {
+    const limit = parseLimit(req.query.limit, 20, 50);
+    const seed = parseSeed(req.query.seed);
+    const result = await randomNovel({ limit, seed });
+    const { cached, ageMs, item, ...rest } = result;
+
+    return sendData(
+      res,
+      item,
+      cacheMeta(result, {
+        random: {
+          seed: rest.seed,
+          page: rest.page,
+          total: rest.total,
+          totalPages: rest.totalPages,
+        },
+      }),
+      { maxAge: 0 },
+    );
   }),
 );
 

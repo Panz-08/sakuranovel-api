@@ -40,6 +40,7 @@ function docs() {
     },
     endpoints: [
       { method: 'GET', path: '/api/novels', description: 'Daftar novel' },
+      { method: 'GET', path: '/api/novels/random?seed=123', description: 'Satu novel acak (seed opsional)' },
       { method: 'GET', path: '/api/novels/:idOrSlug', description: 'Detail novel + chapter pertama/terbaru' },
       { method: 'GET', path: '/api/novels/:idOrSlug/chapters', description: 'Daftar chapter' },
       { method: 'GET', path: '/api/chapters/:id', description: 'Metadata chapter + excerpt singkat' },
@@ -52,6 +53,7 @@ function docs() {
     ],
     examples: {
       novels: '/api/novels?page=1&limit=20&sort=popular',
+      random: '/api/novels/random?seed=42',
       search: '/api/search?q=academy',
       detail: '/api/novels/the-victim-of-the-academy',
       chapters: '/api/novels/the-victim-of-the-academy/chapters?page=1&limit=50&order=desc',

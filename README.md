@@ -108,6 +108,7 @@ Response error:
 | `GET` | `/health` | Health check lokal |
 | `GET` | `/health?upstream=1` | Cek koneksi ke sumber |
 | `GET` | `/api/novels` | Daftar novel |
+| `GET` | `/api/novels/random?seed=123` | Satu novel acak, `seed` opsional agar hasil bisa diulang |
 | `GET` | `/api/novels/:idOrSlug` | Detail novel + chapter pertama/terbaru |
 | `GET` | `/api/novels/:idOrSlug/chapters` | Daftar chapter |
 | `GET` | `/api/chapters/:id` | Metadata chapter + excerpt singkat |
@@ -155,6 +156,7 @@ client.
 ```bash
 # daftar novel populer
 curl "http://localhost:3000/api/novels?limit=5&sort=popular"
+curl "http://localhost:3000/api/novels/random?seed=42"
 
 # cari novel
 curl "http://localhost:3000/api/search?q=academy"

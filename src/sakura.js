@@ -569,6 +569,61 @@ async function listGenres({ limit = 50 } = {}) {
   };
 }
 
+function mulberry32(seed) {
+  let state = Number(seed) >>> 0;
+  return function next() {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function pickIndex(length, random = Math.random) {
+  const size = Number(length);
+  if (!Number.isFinite(size) || size <= 0) return -1;
+  const value = Number(random());
+  const safe = Number.isFinite(value) ? Math.min(Math.max(value, 0), 0.999999999) : 0;
+  return Math.floor(safe * size);
+}
+
+/** Satu novel acak. Seed opsional membuat hasil bisa diulang. */
+async function randomNovel({ limit = 20, seed = null } = {}) {
+  const perPage = Math.max(1, Math.min(100, Number(limit) || 20));
+  const actualSeed = Number.isInteger(seed) && seed >= 0 ? seed : Math.floor(Math.random() * 4294967296);
+  const random = mulberry32(actualSeed);
+
+  const count = await request(
+    'seri',
+    { per_page: perPage, _fields: SERIES_FIELDS },
+    { ttl: 300 },
+  );
+  const total = Number.isFinite(count.total) ? count.total : 0;
+  const totalPages = Number.isFinite(count.totalPages) ? Math.max(1, count.totalPages) : 1;
+
+  let page = 1 + pickIndex(totalPages, random);
+  let result = await listNovels({ page, limit: perPage, sort: 'popular' });
+  let items = result.items;
+
+  if (!items.length && page > 1) {
+    page = 1;
+    result = await listNovels({ page, limit: perPage, sort: 'popular' });
+    items = result.items;
+  }
+  if (!items.length) throw notFound('Novel tidak ditemukan');
+
+  return {
+    item: items[pickIndex(items.length, random)],
+    seed: actualSeed,
+    page,
+    total,
+    totalPages,
+    cached: result.cached,
+    ageMs: result.ageMs || 0,
+  };
+}
+
 async function getStats() {
   const [series, posts] = await Promise.all([
     request('seri', { per_page: 1, _fields: 'id' }, { ttl: 300 }),
@@ -595,6 +650,9 @@ module.exports = {
   searchNovels,
   listGenres,
   getStats,
+  randomNovel,
+  mulberry32,
+  pickIndex,
   normalizeNovel,
   normalizeChapter,
   normalizeGenre,
