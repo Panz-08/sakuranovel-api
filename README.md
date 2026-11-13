@@ -1,5 +1,8 @@
 # SakuraNovel API
 
+[![CI](https://github.com/Panz-08/sakuranovel-api/actions/workflows/ci.yml/badge.svg)](https://github.com/Panz-08/sakuranovel-api/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 API metadata novel dan daftar chapter dari [Sakuranovel](https://sakuranovel.id), siap dipakai di Vercel.
 
 **Creator: panz-08**
